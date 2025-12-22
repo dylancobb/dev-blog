@@ -1,0 +1,77 @@
+---
+title: Meantonal
+date: 09-09-2025
+description: A low-level library for representing pitch in Western music.
+image: ../assets/meantonal.png
+info:
+  - text: Website
+    link: https://meantonal.org/
+    icon:
+      type: lucide
+      name: music
+  - text: GitHub (TypeScript)
+    link: https://github.com/meantonal/meantonal-js
+    icon:
+      type: lucide
+      name: github
+  - text: GitHub (C)
+    link: https://github.com/meantonal/meantonal-c
+    icon:
+      type: lucide
+      name: github
+---
+
+[Meantonal](https://meantonal.org) is a library for representing, querying and manipulating musical notes, intervals, and objects built from them in a **semantically sensitive** way. It is the product of my own mathematical investigations into pitch representation after grappling with the inadequacies of the most common approaches.
+
+It naturally distinguishes between enharmonics such as C♯ and D♭, while being aware of their enharmonicity.
+
+Currently there is a [TypeScript implementation](https://meantonal.org/js/) and a [C implementation](https://meantonal.org/c/) of the library, and they are maintained side by side.
+
+## Features
+
+- Incredibly simple, expressive API.
+- Comprehensive documentation.
+- Installation is as simple as `npm install meantonal`, or including a header file.
+- Zero dependencies (excepting the standard library for the C version).
+- Pitches and intervals are the same if and only if they are spelled identically.
+- Target any meantone tuning system, not just 12-tone equal temperament.
+- Open source.
+- Permissive MIT license: feel free to use Meantonal, even in a commercial product!
+- Easy to extend, as everything is just simple linear algebra under the hood!
+
+Here's a taste of the library's "flavour" in JavaScript:
+
+```ts
+import { SPN, Helmholtz, Interval, TonalContext, MirrorAxis } from "meantonal";
+
+let p: Pitch = SPN.toPitch("C4");
+let q: Pitch = Helmholtz.toPitch("e'");
+
+let m: Interval = p.intervalTo(q); // M3
+let n: Interval = Interval.fromName("M3");
+
+m.isEqual(n); // true
+
+let context: TonalContext = TonalContext.fromStrings("Eb", "major");
+
+q = q.snapDiatonic(context); // q has now snapped to Eb4
+
+let axis: MirrorAxis = MirrorAxis.fromSPN("D4", "A4");
+
+q = q.invert(axis); // q is now G#4
+```
+
+## Projects using Meantonal
+
+Obviously, as a very new library, Meantonal doesn't have too many users just yet. A few of my friends have been making projects with it, and I used it to build [Cantussy](https://cantussy.com), another project featured [on this site](cantussy).
+
+## Roadmap
+
+I intend to use Meantonal extensively in my own projects going forward, so the API will likely receive various updates here and there. I'm also potentially interested in writing implementations in other languages such as Python, to increase the availability of the library to developers working in those languages.
+
+Meantonal is very specifically a library for manipulating the pitches standard notation is capable of notating without requiring new accidentals to be invented. This happens to coincide with the pitches a meantone tuning system makes available, which is how it acquired its name. I am also quite interested in writing several similar libraries that handle rather different semantic pitch spaces:
+
+- A library where pitches are represented as pitch classes, and the most sensible spellings for rendering standard notation are contextually inferred somehow. This would be useful for post-tonal music, and readily permits generalisation from 12TET to arbitrary EDO tuning systems.
+- A library where pitches are represented as arbitrary-length vectors. Any "pure" interval can be expressed, and any arbitrary regular tempered tuning system can be achieved. This is essentially a generalisation of Meantonal to higher dimensions.
+
+I'm also interested in writing a library (or libraries) for expressing rhythmic and metric information.

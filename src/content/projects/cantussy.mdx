@@ -1,0 +1,35 @@
+---
+title: Cantussy
+date: 10-27-2025
+description: A procedural cantus firmus and first-species counterpoint generator.
+image: ../assets/cantussy.png
+info:
+  - text: Website
+    link: https://cantussy.com
+    icon:
+      type: lucide
+      name: music
+  - text: GitHub
+    link: https://github.com/hex-mt/cantus-gen
+    icon:
+      type: lucide
+      name: github
+---
+
+[Cantussy](https://cantussy.com) is a web app that procedurally generates musical material in three stages:
+1. First, it generates a **cantus firmus**. This is a simple vocal melody, free of rhythmic differentiation, which meets various criteria to do with ease of singing, and freedom from monotony.
+2. A second melody is generated in note-against-note (["first species"](https://en.wikipedia.org/wiki/Counterpoint#First_species)) **counterpoint** against the cantus. This melody broadly meets the same criteria as the cantus.
+3. The generated two-voice texture is then **unfolded** to create a more "instrumental" single-voice melody.
+
+This project is something of a proof of concept. It uses randomised tree descent with backtracking to generate the cantus, and a similar process to generate the counterpoint: using a lookup table to retrieve a list of "valid contrapuntal moves" for a given cantus motion and current vertical interval, and then randomly exhausting each option recursively.
+
+It also uses both the C and TypeScript versions of [Meantonal](https://meantonal.org) for pitch representation and manipulation, which is another project featured [on this site](meantonal), with the low level generative algorithms written in C and compiled to [WebAssembly](https://webassembly.org/) via [emscripten](https://emscripten.org/). The web frontend then calls these functions via JavaScript, using [Verovio](https://verovio.org) to generate notation as SVG code, which is then rendered to the screen.
+
+This project enabled me to learn a lot about Emscripten and incorporating code written in languages like C into web apps.
+
+## Roadmap
+
+While it's not a high priority right now, I'd like to do the following when time permits:
+- Tighten up the constraints on the cantus and counterpoint generation steps.
+- Develop the unfolding step more, and add controls. Currently it simply alternates between the two voices in triplets, but there are many more sophisticated possibilities.
+- Extend counterpoint generation to encompass [second, third and fourth species](https://en.wikipedia.org/wiki/Counterpoint#Species_counterpoint) counterpoint. I suspect fifth species may require a fundamentally different approach, but have no way of verifying this currently.

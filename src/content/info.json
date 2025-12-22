@@ -3,17 +3,25 @@
     "id": 1,
     "icon": {
       "type": "lucide",
-      "name": "cake"
+      "name": "terminal"
     },
-    "text": "1 year old"
+    "text": "Software developer"
   },
   {
     "id": 2,
     "icon": {
       "type": "lucide",
+      "name": "music"
+    },
+    "text": "Musician"
+  },
+  {
+    "id": 3,
+    "icon": {
+      "type": "lucide",
       "name": "earth"
     },
     "type": "lucide",
-    "text": "Made in Germany"
+    "text": "Made in England"
   }
 ]
