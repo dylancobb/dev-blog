@@ -22,7 +22,7 @@ import node from "@astrojs/node";
 
 // https://astro.build/config
 const config = defineConfig({
-    site: "https://dylancobb.dev",
+    site: "http://dylancobb.dev",
     output: "static",
     integrations: [
         expressiveCode({
