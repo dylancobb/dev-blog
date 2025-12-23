@@ -36,17 +36,6 @@ const socials = defineCollection({
     }),
 });
 
-// const workExperience = defineCollection({
-//   loader: file("src/content/work.json"),
-//   schema: z.object({
-//     id: z.number(),
-//     title: z.string(),
-//     company: z.string(),
-//     duration: z.string(),
-//     description: z.string(),
-//   })
-// });
-
 const tags = defineCollection({
     loader: file("src/content/tags.json"),
     schema: z.object({
