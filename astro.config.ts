@@ -6,8 +6,6 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import spectre from "./package/src";
 
-import node from "@astrojs/node";
-
 // const {
 //     GISCUS_REPO,
 //     GISCUS_REPO_ID,
@@ -58,9 +56,6 @@ const config = defineConfig({
             // },
         }),
     ],
-    // adapter: node({
-    //     mode: "standalone",
-    // }),
 });
 
 export default config;
