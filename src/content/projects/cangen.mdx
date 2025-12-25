@@ -15,6 +15,15 @@ info:
       type: lucide
       name: github
 ---
+import { Image } from 'astro:assets';
+import canon1 from '../assets/canonic-pattern-1.png';
+import canon2 from '../assets/canonic-pattern-2.png';
+import canon3 from '../assets/canonic-pattern-3.png';
+import canon4 from '../assets/canonic-pattern-4.png';
+import canon5 from '../assets/canonic-pattern-5.png';
+import canon6 from '../assets/canonic-pattern-6.png';
+import canon7 from '../assets/canonic-pattern-7.png';
+import canon8 from '../assets/canonic-pattern-8.png';
 
 [Cangen](https://cangen.tiiny.site/) was actually my first coding project, all the way back in 2023. I had been exploring canonic sequences by hand with a pen and paper, and compiling all the results was becoming repetitive and begged for automation. Eventually I bit the bullet and learned a bit of C, and then JavaScript, and cangen was the result!
 
@@ -23,3 +32,120 @@ A **melodic sequence** is formed when melodic material is repeated, transposed t
 This app is essentially a constraint satisfaction algorithm powered by a few nested `for` loops. First, it generates the set of all "valid" two-note melodic models based on some constraints related to ease of singing, with models that fail to meet any constraints being skipped. Then, for each melodic model, every possible vertical placement of an imitating second "copy" is tried, and those that fail to meet certain constraints are again skipped.
 
 Finally, a collection of functions that query properties of patterns algebraically are used to filter the patterns via user-specified parameters.
+
+## Roadmap
+
+Although I was forced to abandon this project by other commitments in 2023, I intended to add features that allow patterns to be procedurally "elaborated", as I had developed various processes to do so on paper. These processes will hopefully end up being integrated into a more comprehensive application at some point in the future. As an example:
+
+<div style="overflow-x: scroll">
+    <Image src={canon1} alt="Canonic pattern 1" height={150} />
+</div>
+<br />
+<audio controls>
+    <source src="/audio/canonic-pattern-1.mp3" type="audio/mpeg" />
+    Your browser does not support the audio tag.
+</audio>
+<br />
+
+This pattern contains a descending third in its melodic model, which can be "split" into a stepwise passing motion:
+
+<div style="overflow-x: scroll">
+    <Image src={canon2} alt="Canonic pattern 2" height={150} />
+</div>
+<br />
+<audio controls>
+    <source src="/audio/canonic-pattern-2.mp3" type="audio/mpeg" />
+    Your browser does not support the audio tag.
+</audio>
+<br />
+
+These passing tones can be "supported" with new consonances, effectively creating a new pattern of the same kind as the one we started with, but belonging to the set of patterns with 4-note melodic models:
+
+<div style="overflow-x: scroll">
+    <Image src={canon3} alt="Canonic pattern 3" height={150} />
+</div>
+<br />
+<audio controls>
+    <source src="/audio/canonic-pattern-3.mp3" type="audio/mpeg" />
+    Your browser does not support the audio tag.
+</audio>
+<br />
+
+Let's cycle this pattern forwards a beat so it starts on what was previously the fourth quarter note. This actually forms a ubiquitous pattern in classical music called the "canonic Prinner":
+
+<div style="overflow-x: scroll">
+    <Image src={canon4} alt="Canonic pattern 4" height={150} />
+</div>
+<br />
+<audio controls>
+    <source src="/audio/canonic-pattern-4.mp3" type="audio/mpeg" />
+    Your browser does not support the audio tag.
+</audio>
+<br />
+
+This pattern contains descending steps which can be delayed via suspensions:
+
+<div style="overflow-x: scroll">
+    <Image src={canon5} alt="Canonic pattern 5" height={150} />
+</div>
+<br />
+<audio controls>
+    <source src="/audio/canonic-pattern-5.mp3" type="audio/mpeg" />
+    Your browser does not support the audio tag.
+</audio>
+<br />
+
+There is a two-step process by which suspended patterns can be reduced to their essential components, and then repopulated with new intervals (there are many possibilities for these intervals, only one possibility is presented here):
+
+<div style="overflow-x: scroll">
+    <Image src={canon6} alt="Canonic pattern 6" height={150} />
+</div>
+<br />
+
+<div style="overflow-x: scroll">
+    <Image src={canon7} alt="Canonic pattern 7" height={150} />
+</div>
+<br />
+<audio controls>
+    <source src="/audio/canonic-pattern-6.mp3" type="audio/mpeg" />
+    Your browser does not support the audio tag.
+</audio>
+<br />
+
+Lastly, an example of how this pattern could be adapted into actual musical texture:
+
+<div style="overflow-x: scroll">
+    <Image src={canon8} alt="Canonic pattern 8" height={150} />
+</div>
+<br />
+<audio controls>
+    <source src="/audio/canonic-pattern-7.mp3" type="audio/mpeg" />
+    Your browser does not support the audio tag.
+</audio>
+
+I have also written higher dimensional equivalents to this 2x2 generator that exhaustively mine canoninc sequences with larger numbers of voices, and longer melodic models. The same elaboration techniques can be applied to these patterns, which make the generative possibilities surprisingly powerful:
+
+<audio controls>
+    <source src="/audio/Nouveauxbourdon.mp3" type="audio/mpeg" />
+    Your browser does not support the audio tag.
+</audio>
+<br />
+
+<audio controls>
+    <source src="/audio/3x3.mp3" type="audio/mpeg" />
+    Your browser does not support the audio tag.
+</audio>
+<br />
+
+<audio controls>
+    <source src="/audio/7x3.mp3" type="audio/mpeg" />
+    Your browser does not support the audio tag.
+</audio>
+<br />
+
+<audio controls>
+    <source src="/audio/4x4.mp3" type="audio/mpeg" />
+    Your browser does not support the audio tag.
+</audio>
+
+I intend to unify these techniques behind a single user interface at some point.
