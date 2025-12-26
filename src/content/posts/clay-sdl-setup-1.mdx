@@ -8,7 +8,6 @@ tags:
   - C
 ---
 import { Image } from 'astro:assets';
-import { YouTube } from 'astro-embed';
 import Layers from '../assets/sdl-layers.svg';
 import windowCreated from '../assets/window-created.png';
 
@@ -20,7 +19,7 @@ In this post and a subsequent follow-up, I'll be taking another small step. Toge
 
 ### The case for SDL
 
-Sadly, my current experience writing desktop applications lies in stark contrast with the lofty goal of a feature-rich desktop application. In fact, it occurred to me that, after nearly three years spent mostly on web dev, the only way I know to draw a rectangle on the screen looks something like this:
+Sadly, my current experience lies in stark contrast with the lofty goal of a feature-rich desktop application. In fact, it occurred to me that, after nearly three years spent mostly on web development, the only way I know to draw a rectangle on the screen looks something like this:
 
 ```html title="some-page.html"
 <div>
@@ -128,11 +127,11 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result);
 
 ### Creating a window
 
-#### `common.h`
+#### `state.h`
 
-First, let's create a file `common.h` and define a preliminary `AppState` type:
+First, let's create a file `state.h` and define a preliminary `AppState` type:
 
-```c title="common.h"
+```c title="state.h"
 #pragma once
 
 #include <SDL3/SDL.h>
@@ -143,26 +142,20 @@ typedef struct AppState {
 } AppState;
 ```
 
-#### `init.h` and `init.c`
+For now, we'll just store pointers to [`SDL_Window`](https://wiki.libsdl.org/SDL3/SDL_Window) and [`SDL_Renderer`](https://wiki.libsdl.org/SDL3/SDL_Renderer), but later on we'll be adding a lot of stuff to this struct.
 
-We're going to define `SDL_AppInit` in `init.c`, and an associated header file `init.h` is as good a place as any to define the `SDL_MAIN_USE_CALLBACKS` macro:
+#### `init.c`
+
+We're going to define `SDL_AppInit` in `init.c`, and this is as good a place as any to define the `SDL_MAIN_USE_CALLBACKS` macro and include the `SDL_main.h` header:
 
 ```c title="init.h"
-#pragma once
-
 #define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL_main.h>
+#include <SDL3/SDL.h>
 
-#include "common.h"
-```
+#include "state.h"
 
-```c title="init.c"
-#include "init.h"
-#include <SDL3/SDL_video.h>
-#include <SDL3_ttf/SDL_ttf.h>
-
-SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
-{
+SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     AppState *state = SDL_calloc(1, sizeof(AppState));
     if (!state) {
         SDL_Log("Failed to allocate memory for AppState = %s", SDL_GetError());
@@ -187,7 +180,7 @@ It's worth unpacking a little bit of what's going on here, as several patterns i
 - `SDL_APP_CONTINUE` signals the app should continue running.
 - `SDL_APP_SUCCESS` signals to terminate with success.
 
-Accordingly, we will check operations that can fail, such as allocating memory for the `AppState` struct, and then decide how to handle their failure. Some errors should result in the application immediately terminating. Failure to initialise app state or create a window are things that require immediate termination. Other errors require handling gracefully, such as by writing them to an error log, or informing the user something they tried to do didn't succeed.
+Accordingly, we will check operations that can fail, such as allocating memory for the `AppState` struct, and then decide how to handle their failure. Some errors should result in the application immediately terminating, in which case we return `SDL_APP_FAILURE`. Failure to initialise app state or create a window are things that require immediate termination. Other errors require handling gracefully, such as by writing them to an error log, or informing the user something they tried to do didn't succeed. If there were no critical errors, we return `SDL_APP_CONTINUE`. **Note:** we do *not* `SDL_APP_SUCCESS`. This is only returned when it is time to terminate the application without error, such as when the user quits voluntarily.
 
 The [`SDL_CreateWindowAndRenderer`](https://wiki.libsdl.org/SDL3/SDL_CreateWindowAndRenderer) function takes a few different arguments:
 
@@ -198,21 +191,16 @@ SDL_CreateWindowAndRenderer("SDL3 + Clay", 800, 600, SDL_WINDOW_RESIZABLE,
 
 We provide a title for our window, an initial width and height, an [SDL_WindowFlags](https://wiki.libsdl.org/SDL3/SDL_WindowFlags) flag value, which has various other possibilities like opening in fullscreen or as a maximised window, and pointers to the `Window` and `Renderer`.
 
-#### `quit.h` and `quit.c`
+#### `quit.c`
 
-We should get in a habit of destroying the things we create on app teardown as soon as possible, so let's create `quit.h` and `quit.c` next:
-
-```c title="quit.h"
-#pragma once
-
-#include "common.h"
-```
+We should get in a habit of destroying the things we create on app teardown as soon as possible, so let's create `quit.c` next:
 
 ```c title="quit.c"
-#include "quit.h"
+#include <SDL3/SDL.h>
 
-void SDL_AppQuit(void *appstate, SDL_AppResult result)
-{
+#include "state.h"
+
+void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     if (result != SDL_APP_SUCCESS) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Application failed to run");
     }
@@ -231,23 +219,18 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result)
 }
 ```
 
+If you are new to C, pay close attention to the pattern: we always make sure a pointer is not `NULL` before trying to access any of its contents to avoid [dereferencing a null pointer](https://en.wikipedia.org/wiki/Null_pointer#Null_dereferencing), and before freeing it to avoid [doubly freeing memory](https://owasp.org/www-community/vulnerabilities/Doubly_freeing_memory). This must be done recursively for nested structures.
+
 It's not necessary to call [`SDL_Quit`](https://wiki.libsdl.org/SDL3/SDL_Quit), as SDL calls it automatically after `SDL_AppQuit` returns, and before the process terminates.
 
-#### `event.h` and `event.c`
+#### `event.c`
 
-`event.h` and `event.c` will be fairly sparse for now. We're just going to listen for the escape key, and signal to terminate the app succesfully if it's encountered:
-
-```c title="event.h"
-#pragma once
-
-#include "common.h"
-```
+`event.c` will be fairly sparse for now. We're just going to listen for the escape key, and signal to terminate the app succesfully if it's encountered:
 
 ```c title="event.c
-#include "event.h"
+#include <SDL3/SDL.h>
 
-SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
-{
+SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
     if (event->type == SDL_EVENT_KEY_DOWN && event->key.scancode == SDL_SCANCODE_ESCAPE ||
         event->type == SDL_EVENT_QUIT) {
         return SDL_APP_SUCCESS;  /* end the program, reporting success to the OS. */
@@ -256,24 +239,18 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 }
 ```
 
-#### `iterate.h` and `iterate.c`
+#### `iterate.c`
 
 Last but not least, it's time to draw something!
 
-```c title="iterate.h"
-#pragma once
-
-#include "common.h"
-```
-
 ```c title="iterate.c"
-#include "iterate.h"
+#include <SDL3/SDL.h>
 
-SDL_AppResult SDL_AppIterate(void *appstate)
-{
+#include "state.h"
+
+SDL_AppResult SDL_AppIterate(void *appstate) {
     AppState *state = (AppState*) appstate;
 
-    /* Draw the message */
     SDL_SetRenderDrawColor(state->renderer, 0, 30, 120, 255);
     SDL_RenderClear(state->renderer);
     SDL_RenderPresent(state->renderer);
