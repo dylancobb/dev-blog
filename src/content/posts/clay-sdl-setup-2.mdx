@@ -1,0 +1,45 @@
+---
+title: "Fun with SDL3 and Clay"
+description: "Doing a little Christmas coding, setting up a C project with SDL3 and Clay, creating a window, and drawing some text and graphics on the screen."
+image: "../assets/sdl-clay.png"
+createdAt: 12-25-2025
+draft: true
+tags:
+  - C
+---
+import { Image } from 'astro:assets';
+import { YouTube } from 'astro-embed';
+
+Since we're going to need a couple of related libraries later, so let's install them now. We need to go through a similar process for [`SDL_ttf`](https://github.com/libsdl-org/SDL_ttf) and [`SDL_image`](https://github.com/libsdl-org/SDL_image).
+
+First, we'll build and install `SDL_ttf`:
+
+```bash
+git clone https://github.com/libsdl-org/SDL_ttf
+cd SDL_ttf
+cmake -S . -B build
+cmake --build build
+sudo cmake --install build --prefix /usr/local
+```
+
+Now, we'll build and install `SDL_image`:
+
+```bash
+git clone https://github.com/libsdl-org/SDL_image
+cd SDL_ttf
+cmake -S . -B build
+cmake --build build
+sudo cmake --install build --prefix /usr/local
+```
+
+As with the main library, you may have to install missing dependencies first.
+
+## The case for Clay
+
+SDL is quite a small, low-level library. It's not a framework or a GUI toolkit, and doesn't provide any tools to manage the layout of the components that make up your user interface on screen. Personally, I really appreciate the tree-based way we build UI in the browser with HTML and CSS. I especially like the [flexbox layout module](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Flexible_box_layout/Basic_concepts), as it's very intuitive to reason around the placement of objects in flex-based layouts.
+
+[Clay](https://www.nicbarker.com/clay) is a renderer-agnostic library created by the brilliant Nic Barker, and brings the joys of `<div class="flex">` soup to C developers. It's insanely cool, but I'll let Nic sell it to you:
+
+<div style="padding-block: 2rem;">
+    <YouTube id="DYWTw19_8r4" />
+</div>
