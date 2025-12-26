@@ -20,7 +20,7 @@ In this post and a subsequent follow-up, I'll be taking another small step. Toge
 
 ### The case for SDL
 
-Sadly, my current experience writing desktop applications lies in stark contrast with the lofty goal of a feature-rich desktop application. In fact, it occurred to me that, after nearly three years spent mostly on web dev, the only way I know to draw a rectangle on the screen looks something like this:
+Sadly, my current experience lies in stark contrast with the lofty goal of a feature-rich desktop application. In fact, it occurred to me that, after nearly three years spent mostly on web development, the only way I know to draw a rectangle on the screen looks something like this:
 
 ```html title="some-page.html"
 <div>
@@ -143,9 +143,11 @@ typedef struct AppState {
 } AppState;
 ```
 
+For now, we'll just store pointers to [`SDL_Window`](https://wiki.libsdl.org/SDL3/SDL_Window) and [`SDL_Renderer`](https://wiki.libsdl.org/SDL3/SDL_Renderer), but later on we'll be adding a lot of stuff to this struct.
+
 #### `init.h` and `init.c`
 
-We're going to define `SDL_AppInit` in `init.c`, and an associated header file `init.h` is as good a place as any to define the `SDL_MAIN_USE_CALLBACKS` macro:
+We're going to define `SDL_AppInit` in `init.c`, and an associated header file `init.h` is as good a place as any to define the `SDL_MAIN_USE_CALLBACKS` macro and include the `SDL_main.h` header:
 
 ```c title="init.h"
 #pragma once
@@ -187,7 +189,7 @@ It's worth unpacking a little bit of what's going on here, as several patterns i
 - `SDL_APP_CONTINUE` signals the app should continue running.
 - `SDL_APP_SUCCESS` signals to terminate with success.
 
-Accordingly, we will check operations that can fail, such as allocating memory for the `AppState` struct, and then decide how to handle their failure. Some errors should result in the application immediately terminating. Failure to initialise app state or create a window are things that require immediate termination. Other errors require handling gracefully, such as by writing them to an error log, or informing the user something they tried to do didn't succeed.
+Accordingly, we will check operations that can fail, such as allocating memory for the `AppState` struct, and then decide how to handle their failure. Some errors should result in the application immediately terminating, in which case we return `SDL_APP_FAILURE`. Failure to initialise app state or create a window are things that require immediate termination. Other errors require handling gracefully, such as by writing them to an error log, or informing the user something they tried to do didn't succeed. If there were no critical errors, we return `SDL_APP_CONTINUE`. **Note:** we do *not* `SDL_APP_SUCCESS`. This is only returned when it is time to terminate the application without error, such as when the user quits voluntarily.
 
 The [`SDL_CreateWindowAndRenderer`](https://wiki.libsdl.org/SDL3/SDL_CreateWindowAndRenderer) function takes a few different arguments:
 
@@ -230,6 +232,8 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result)
     }
 }
 ```
+
+If you are new to C, pay close attention to the pattern: we always make sure a pointer is not `NULL` before trying to access any of its contents to avoid [dereferencing a null pointer](https://en.wikipedia.org/wiki/Null_pointer#Null_dereferencing), and before freeing it to avoid [doubly freeing memory](https://owasp.org/www-community/vulnerabilities/Doubly_freeing_memory). This must be done recursively for nested structures.
 
 It's not necessary to call [`SDL_Quit`](https://wiki.libsdl.org/SDL3/SDL_Quit), as SDL calls it automatically after `SDL_AppQuit` returns, and before the process terminates.
 
