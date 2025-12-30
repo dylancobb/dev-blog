@@ -11,7 +11,7 @@ import { Image } from 'astro:assets';
 import Layers from '../assets/sdl-layers.svg';
 import windowCreated from '../assets/window-created.png';
 
-It's natural when learning a new skill to set overly ambitious goals, and start gargantuan projects you're very unlikely to see through to completion. You picked up the guitar, and decided you want to open at Wembley arena. You watched a few coding tutorials and decide you wanted to make a commercial video game by yourself. Well, ever since I started my coding journey in 2023, I've wanted to build a program where users can enter, generate, organise and transform musical content. It'd be cross-platform, render notation, play audio, and provide ways to add new functionality. Essentially: an **extensible music composition environment**. I actually built [Meantonal](../projects/meantonal), [Cangen](../projects/cangen) and [Cantussy](../projects/cantussy) as part of this long-term goal.
+It's natural when learning a new skill to set overly ambitious goals, and start gargantuan projects you're very unlikely to see through to completion. You picked up the guitar, and decided you want to open at Wembley arena. You watched a few coding tutorials and decide you wanted to make a commercial video game by yourself. Well, ever since I started my coding journey in 2023, I've wanted to build a program where users can enter, generate, organise and transform musical content. It'd be cross-platform, render notation, play audio, and provide ways to add new functionality. Essentially: an **extensible music composition environment**. I actually built [Meantonal](../../projects/meantonal), [Cangen](../../projects/cangen) and [Cantussy](../../projects/cantussy) as part of this long-term goal.
 
 In this post and a subsequent follow-up, I'll be taking another small step. Together, we'll set up an [SDL3](https://libsdl.org/) and [Clay](https://www.nicbarker.com/clay) project, create a window, and draw some text and graphics on the screen. We'll also set up a `CMakeLists.txt` file that enables the same source code to be compiled both into a desktop application and [WebAssembly](https://webassembly.org/) that can run in the browser.
 
@@ -274,4 +274,6 @@ Pressing the escape key should exit the program.
 
 ## What's next?
 
-This post is getting long enough, so I'll wrap it up here for now. I'll make a follow-up post soon, where we'll set up [Clay](https://www.nicbarker.com/clay) and a CMake file that enables us to compile to WebAssembly as well as to a desktop application. We'll see how to build out some basic UI using Clay, and render text using TrueType fonts via [`SDL_ttf`](https://github.com/libsdl-org/SDL_ttf/).
+This post is getting long enough, so I'll wrap it up here for now. I'll make some follow-up posts soon, where we'll set up [Clay](https://www.nicbarker.com/clay) and a CMake file that enables us to compile to WebAssembly as well as to a desktop application. We'll see how to build out some basic UI using Clay, and render text using TrueType fonts via [`SDL_ttf`](https://github.com/libsdl-org/SDL_ttf/).
+
+**Edit:** part 2 is now up and can be found [here](../clay-sdl-setup-2)
