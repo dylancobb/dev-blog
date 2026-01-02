@@ -125,6 +125,8 @@ const { Content, headings } = await render(post);
     margin-bottom: 0;
     list-style-type: none;
     position: relative;
+    height: 100%;
+    overflow-y: auto;
   }
 
   .toc-card ol li a {
@@ -146,13 +148,15 @@ const { Content, headings } = await render(post);
   }
 
   .left {
-    height: 100%;
     position: relative;
   }
 
   .toc-card {
     position: sticky;
     top: 2rem;
+    max-height: calc(100vh - 4rem);
+    display: flex;
+    flex-direction: column;
   }
 
   article {

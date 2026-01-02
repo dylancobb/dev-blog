@@ -8,12 +8,11 @@
 <style>
   .layout-grid {
     position: relative;
-    align-items: start;
-    align-content: stretch;
     display: grid;
     gap: 2rem;
     grid-template-columns: 2fr 5fr;
-    grid-template-rows: auto;
+    grid-template-rows: minmax(0, 1fr);
+    align-items: start;
   }
 
   @media screen and (max-width: 1380px) {

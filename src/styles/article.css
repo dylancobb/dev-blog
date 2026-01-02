@@ -31,6 +31,8 @@ p img {
 
 .toc-card {
     min-width: 0;
+    position: sticky;
+    top: 2rem;
 }
 
 .toc-card ol {
@@ -76,11 +78,6 @@ ol li a.active {
 .left {
     height: 100%;
     position: relative;
-}
-
-.toc-card {
-    position: sticky;
-    top: 2rem;
 }
 
 .article-header {
