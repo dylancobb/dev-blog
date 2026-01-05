@@ -6,13 +6,15 @@ createdAt: 12-30-2025
 draft: false
 tags:
   - C
+  - Clay
+  - SDL
 ---
 import { Image } from 'astro:assets';
 import { YouTube } from 'astro-embed';
-import outerContainer from '../assets/outer-container.png';
-import failedResize from '../assets/failed-resize.png';
-import resizeSucceeded from '../assets/resize-succeeded.png';
-import clayHelloWorld from '../assets/clay-hello-world.png';
+import outerContainer from '../assets/sdl-clay-2/outer-container.png';
+import failedResize from '../assets/sdl-clay-2/failed-resize.png';
+import resizeSucceeded from '../assets/sdl-clay-2/resize-succeeded.png';
+import clayHelloWorld from '../assets/sdl-clay-2/clay-hello-world.png';
 
 By the end of [the last blog post](../clay-sdl-setup-1), we had managed to set up SDL3, open a resizable window, render a static blue background, and handle the event of the user pressing the escape key to close the application.
 
@@ -747,6 +749,6 @@ Once you start extracting `Clay_ElementDeclaration` structs and recurring proper
 
 ## What's next?
 
-We might only have a grey rectangle to show for it, but we've accomplished a tonne in this post! In part 3, we'll build some mildly nested and interactive layout, enable Clay's built in debug console, write our own custom rendering code to add triangular decorations to rectangles, and set up CMake to build both a desktop and WebAssembly version of our app.
+We might only have a grey rectangle to show for it, but we've accomplished a tonne in this post! In part 3, we'll build some mildly nested and interactive layout, enable Clay's built in debug console, and set up CMake to build both a desktop and WebAssembly version of our app.
 
 You can view the state of the codebase you would have ended up with by following the past two posts [here](https://github.com/dylancobb/sdl3-clay-setup/tree/6d092cac8a7d544cf8d42f965176c62f3ce1f1d6) at any time.

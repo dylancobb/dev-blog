@@ -1,11 +1,20 @@
 [
   {
+    "id": "Books"
+  },
+  {
     "id": "C"
+  },
+  {
+    "id": "Clay"
   },
   {
     "id": "music"
   },
   {
     "id": "news"
+  },
+  {
+    "id": "SDL"
   }
 ]
