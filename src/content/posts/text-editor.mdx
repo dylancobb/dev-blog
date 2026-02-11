@@ -1,0 +1,86 @@
+---
+title: "Building a Text Editor"
+description: "My journey so far building Sev, a graphical text editor inspired by Emacs and Neovim."
+image: "../assets/text-editor/title-image.png"
+createdAt: 11-02-2026
+draft: false
+tags:
+  - C
+  - Clay
+  - SDL
+  - news
+---
+import { Image } from 'astro:assets';
+import textEditing from '../assets/book-covers/craft-of-text-editing.jpg';
+import tufte from '../assets/text-editor/fis.png';
+
+It's been a busy month! In my last few posts ([part 1](../clay-sdl-setup-1), [part 2](../clay-sdl-setup-2) and [part 3](../clay-sdl-setup-3)) I walked through setting up a C project using SDL3 + Clay, and building to WebAssembly with CMake. Since then I've been getting my hands dirty building out a rather fun, overly-ambitious project called [Sev](https://github.com/dylancobb/sev).
+
+Sev is a graphical text editor heavily inspired by the philosophies of Emacs and Neovim. It is built around an embedded [Chibi Scheme](https://github.com/ashinn/chibi-scheme) interpreter. Scheme is a language with a lot of shared ancestry with Emacs's elisp, and Sev exposes all of its user-facing functionality through interactive Scheme commands. As with Emacs, the editing environment is:
+- Highly discoverable/introspectable and self-documenting.
+- Highly configurable
+- Highly extensible.
+
+It's also, sadly, highly incomplete right now. Text editors are hard.
+
+## The motivation
+
+Why build another Emacs, I hear you ask? The truth is, as edifying as the experience has been, I don't need or want to build another Emacs. Just the core text editing functionality, and the user extensibility afforded by the underlying architecture (if you're interested, I talked about my admiration for Emacs's architecture [in a recent blog post](../three-year-retrospective#mastering-emacs)).
+
+What I'm actually building is an **engine** for an application which requires **first-class text editing functionality**. Many software applications revolve around text, despite not being text editors. For example, [Obsidian](https://obsidian.md) is a [Personal Knowledge Management](https://en.wikipedia.org/wiki/Personal_knowledge_management) tool, but ultimately if you use it you will spend most of your time viewing and editing markdown files. Plus, even in a context where there is no application-specific need to edit text, if an application's behaviour is customisable at runtime via an embedded scripting language then the ability to write, edit and evaluate those scripts directly inside the application makes it easier and more pleasant for users to develop extensions.
+
+There is a subtle but important difference this imparts on Sev's architecture vs. Emacs:
+
+
+1. Everything is *not* a buffer. *Many* things are buffers, but Sev will also make use of other forms of graphical display. For example, I plan on using it to create a music composition environment with musical notation and all kinds of other non-text graphical elements.
+2. Sev does not try to be unopinionated. Defaults should be sane, and batteries should usually be included.
+
+Emacs's power comes from the homogeneity of its internals and the fact that *everything* is exposed via Lisp and available to customise. But the end user of Emacs is the person using it as a text editor, and they need to be able to change everything *at runtime*.
+
+The end user of Sev is the application developer, who has direct access to the C internals. *Their* end user is using whatever they build with it! *Most* things should still be customisable, but the application developer is the user Sev will be specially oriented towards. Hopefully it will still be an excellent text editor by itself, and perfectly viable as a main driver.
+
+Unlike Emacs, Sev also compiles to WebAssembly and can run directly in the browser. This is one of the primary locations I plan on deploying the applications I will be building on top of it!
+
+## Text editing architecture
+
+Text editors are complex pieces of software, so I invested quite a lot of time investigating their architecture up front, which has paid off so far. The most helpful resources have been *The Craft of Text Editing* by Craig Finseth, [the following paper](https://chrismennie.ca/EMACS-Conceptual-Architecture.pdf), and exploring the codebases of various editors ([Emacs](https://github.com/emacs-mirror/emacs), [Neovim](https://github.com/neovim/neovim), [Helix](https://github.com/helix-editor/helix) and [Zed](https://github.com/zed-industries/zed)).
+
+<Image src={textEditing} alt="The Craft of Text Editing" layout="full-width" style="max-width: 100%; width: 200px; height: auto;" />
+
+Amazon: [US](https://amzn.to/49AaHTT) | [UK](https://amzn.to/49AG4h9)
+
+For now, Sev just uses a gap buffer to store and edit text, but I'm planning on migrating to someting beefier like [ropes](https://github.com/josephg/librope) soon, due to some specific features I plan on supporting.
+
+I also came across [another paper](https://arxiv.org/pdf/2008.06030) with some interesting ideas about utilising layout and modern typography more effectively. Check out their vision of inline comments rendered as [Tufte](https://en.wikipedia.org/wiki/Edward_Tufte)-style sidenotes:
+
+<Image src={tufte} alt="Some code with Tufte-style sidenotes" layout="full-width" style="max-width: 100%; width: 600px; height: auto;" />
+
+I'm keen to explore novel modifications to the display layer like this in Sev, although they're far from a priority right now.
+
+## Collaborative editing
+
+From a computer science perspective, collaborative software is a fascinating domain. Zed supports collaborative text editing, as does VS Code. I plan on building a collaborative music composition environment, so all signs are pointing to it being a necessary feature to add to Sev.
+
+There is an interesting algorithm discovered recently called [Eg-walker](https://arxiv.org/pdf/2409.14252), which appears as far as I can tell to be a revolutionary improvement over existing plain CRDT- and OT-based methods. It's faster, simpler, less resource intensive, and even works well peer-to-peer. The creator's pretty awesome, and uploaded two videos ([part 1](https://www.youtube.com/watch?v=ggXka5TTsOs), [part 2](https://www.youtube.com/watch?v=QLOWuvxwr2M)) of him implementing it from scratch as a reference for other people to follow. Eg-walker uses a temporary CRDT structure, and [Automerge](https://automerge.org/) has a C API.
+
+You can see where this is going. I would like to implement Eg-walker and collaborative editing in Sev. I've never done any network programming in C, and figure it would be a great opportunity to learn about it. Presumably also a *rather nontrivial feature*. It's not one I can avoid forever, but it's at least not happening until the editor is more rounded out and functional for day-to-day usage.
+
+## Other inspirations
+
+I'm a big fan of Obsidian and Emacs's Org mode. The functionality it provides is also a core part of the vision I have for my music software, and I'm interested in the possibility of making it a homogeneous feature across Sev. So far, the best idea I've had is allowing specific directives to be used in plaintext/markdown files, or **anywhere Sev can recognise as a comment** in code files.
+
+These directives would render things like navigable tinks to other files, or embedded media such as images any time the cursor is not inside the text of the directive (kind of like the way `prettify-symbols-mode` works in Emacs, but with superpowers). It would also be possible to crawl files in a directory and create a graph of links/backlinks.
+
+Last but not least: it would be useful if Sev exposed a declarative UI-builder API so users can create interactive GUIs for their scripts/plugins. It needn't be radically sophistiated, but I'll probably write a small DSL in Scheme that builds UI trees, and then some C functions to interpret them and emit Clay rendering calls.
+
+The goal is that, when it's more mature, Sev will be genuinely usable as a foundation to build modern, extensible applications on top of, with robust text editing features. It's got a long way to go still, but I'm enjoying the journey. On the short-term agenda are things like:
+
+- Finishing building out regions / text selection and commands that operate on regions.
+- Build something similar to the "minibuffer" subsystem in Emacs and a command interpreter.
+- Buffer file I/O.
+- Integrate [Tree-sitter](https://tree-sitter.github.io/tree-sitter/) into the project and set up things like basic syntax highlighting.
+- Incremental search and replace functionality. Ultimately I'd like to largely recreate Vim's command mode, as it's what I'm most comfortable with.
+
+Once these features are implemented, Sev will have earned the right to call itself a text editor, and I'll be able to move onto the more interesting features discussed earlier.
+
+Oh, and in the extraordinarily unlikely event that you've always wanted to contribute to a half-baked text editor, Sev is very much open to contributions. Feature requests are welcomed too.
